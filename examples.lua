@@ -12,12 +12,12 @@ print(it.validate_ip("wrongip"))            -- false
 
 
 -- ip_to_int()
--- return: string
+-- return: integer
 print(it.validate_ip("192.168.51.20") and it.ip_to_int("192.168.51.20"))    -- 3232248596
 
 
 -- int_to_ip()
--- return: integer
+-- return: string
 print(it.int_to_ip(3232248596))             -- 192.168.51.20
 
 
