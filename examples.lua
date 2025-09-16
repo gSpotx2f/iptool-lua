@@ -50,3 +50,13 @@ end
 print(it.get_supernet("192.168.5.16/28", 16))                           -- 3232235520
 print(it.get_supernet({[1] = 3232236816, [2] = 28}, 16))                -- arg: {[1] = <ipaddr (int)>, [2] = <prefix>}
 print(it.int_to_ip(it.get_supernet({[1] = 3232236816, [2] = 28}, 16)))  -- 192.168.0.0
+
+
+-- overlap_ip()
+-- return: bool
+print(it.overlap_ip("192.168.1.10", "192.168.1.0/24"))          -- true
+
+
+-- overlap_net()
+-- return: bool
+print(it.overlap_net("192.168.140.1/17", "192.168.0.0/18"))     -- false

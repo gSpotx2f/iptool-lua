@@ -1,5 +1,5 @@
 --[[
- (с) 2020 gSpot <https://github.com/gSpotx2f>
+ (с) 2020 gSpot <https://github.com/gSpotx2f/iptool-lua>
 
  Some functions for manipulating IPv4 addresses.
 
@@ -10,6 +10,8 @@
  get_network_addr(network)
  hosts_from_network(ip)
  get_supernet(network, new_prefix)
+ overlap_ip(ip, network)
+ overlap_net(network, network)
 
  lua == 5.2
 --]]
@@ -152,6 +154,50 @@ local function get_supernet(network, new_prefix)
     return band(network_address, lshift(netmask, diff_prefixlen))
 end
 
+local function overlap_ip(ip, network)
+    local network_address, prefixlen
+    if type(network) == "string" then
+        network_address, prefixlen = get_network_addr(network)
+    elseif type(network) == "table" then
+        network_address, prefixlen = network[1], network[2]
+    else
+        return
+    end
+    ip = ip_to_int(ip)
+    if ip == nil then
+        return
+    end
+    local offset = ipv4_length - prefixlen
+    return (rshift(ip, offset) == rshift(network_address, offset))
+
+end
+
+local function check_network(net)
+    local network_address, prefixlen
+    if type(net) == "string" then
+        network_address, prefixlen = get_network_addr(net)
+    elseif type(net) == "table" then
+        network_address, prefixlen = net[1], net[2]
+    else
+        return
+    end
+    return network_address, prefixlen
+end
+
+local function overlap_net(subnet, network)
+    local network_address_1, prefixlen_1 = check_network(subnet)
+    local network_address_2, prefixlen_2 = check_network(network)
+    if (network_address_1 == nil or prefixlen_1 == nil or
+        network_address_2 == nil or prefixlen_2 == nil) then
+        return
+    end
+    if network_address_1 == network_address_2 then
+        return true
+    end
+    local offset = ipv4_length - math.min(prefixlen_1, prefixlen_2)
+    return (rshift(network_address_1, offset) == rshift(network_address_2, offset))
+end
+
 return {
     validate_ip = validate_ip,
     ip_to_int = ip_to_int,
@@ -160,5 +206,6 @@ return {
     get_network_addr = get_network_addr,
     hosts_from_network = hosts_from_network,
     get_supernet = get_supernet,
+    overlap_ip = overlap_ip,
+    overlap_net = overlap_net,
 }
-
